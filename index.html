@@ -12,27 +12,24 @@
             color: var(--tg-theme-text-color, #000000);
             margin: 0; padding: 20px;
         }
-        .header { text-align: center; margin-bottom: 20px; }
-        .acc-box {
-            background: var(--tg-theme-secondary-bg-color, #f4f4f5);
-            padding: 15px; border-radius: 10px; text-align: center; margin-bottom: 20px;
-        }
+        .acc-box { background: var(--tg-theme-secondary-bg-color, #f4f4f5); padding: 15px; border-radius: 10px; text-align: center; margin-bottom: 20px; }
         .acc-num { font-size: 24px; font-weight: bold; letter-spacing: 2px; color: var(--tg-theme-button-color, #3390ec); margin-top: 5px; }
         
         .tabs { display: flex; margin-bottom: 20px; background: var(--tg-theme-secondary-bg-color, #f4f4f5); border-radius: 10px; overflow: hidden; }
-        .tab { flex: 1; text-align: center; padding: 12px; cursor: pointer; font-weight: bold; font-size: 14px; }
+        .tab { flex: 1; text-align: center; padding: 10px; cursor: pointer; font-weight: bold; font-size: 13px; }
         .tab.active { background: var(--tg-theme-button-color, #3390ec); color: var(--tg-theme-button-text-color, #fff); }
         
         .section { display: none; }
         .section.active { display: block; }
         
         label { display: block; margin-bottom: 5px; font-weight: bold; font-size: 14px; margin-top: 15px;}
-        input {
+        input, select, textarea {
             width: 100%; padding: 12px; margin-bottom: 5px; border-radius: 8px;
             border: 1px solid var(--tg-theme-hint-color, #ccc);
             background: var(--tg-theme-bg-color, #fff); color: var(--tg-theme-text-color, #000);
-            box-sizing: border-box; font-size: 16px;
+            box-sizing: border-box; font-size: 16px; font-family: inherit;
         }
+        textarea { resize: vertical; min-height: 80px; }
         button {
             width: 100%; padding: 14px; border-radius: 8px; border: none; font-size: 16px; font-weight: bold;
             background-color: var(--tg-theme-button-color, #3390ec);
@@ -48,13 +45,14 @@
         <div class="acc-num" id="my_account">Загрузка...</div>
     </div>
 
-    <!-- Переключатель вкладок -->
+    <!-- Вкладки -->
     <div class="tabs">
-        <div class="tab active" onclick="switchTab('deal')">Новая сделка</div>
+        <div class="tab active" onclick="switchTab('deal')">Сделка</div>
         <div class="tab" onclick="switchTab('profile')">Кошелек</div>
+        <div class="tab" onclick="switchTab('support')">Поддержка</div>
     </div>
 
-    <!-- Раздел: НОВАЯ СДЕЛКА -->
+    <!-- Вкладка: СДЕЛКА -->
     <div id="deal" class="section active">
         <label>16-значный ID продавца</label>
         <input type="number" id="seller_acc" placeholder="Например: 1234567890123456">
@@ -65,10 +63,9 @@
         <button onclick="createDeal()">Сформировать сделку</button>
     </div>
 
-    <!-- Раздел: ПРОФИЛЬ -->
+    <!-- Вкладка: ПРОФИЛЬ -->
     <div id="profile" class="section">
         <p style="font-size: 13px; color: gray;">Добавьте адрес TON, на который гарант будет автоматически выводить вашу прибыль от продаж.</p>
-        
         <label>Мой кошелек для выплат</label>
         <input type="text" id="my_wallet" placeholder="Укажите UQ... адрес">
         
@@ -76,19 +73,36 @@
         <button class="btn-danger" onclick="deleteWallet()" id="btn_delete" style="display: none;">Удалить кошелек</button>
     </div>
 
+    <!-- Вкладка: ПОДДЕРЖКА -->
+    <div id="support" class="section">
+        <label>Категория обращения</label>
+        <select id="ticket_cat" onchange="checkCategory()">
+            <option value="Тех. жалоба">Тех. жалоба</option>
+            <option value="Покупатель молчит">Покупатель забыл подтвердить</option>
+            <option value="Продавец не выполнил">Продавец не выполнил заказ</option>
+            <option value="Пожелания">Пожелания проекту</option>
+        </select>
+
+        <div id="deal_id_block" style="display: none;">
+            <label>ID Сделки</label>
+            <input type="number" id="ticket_deal_id" placeholder="Номер сделки">
+        </div>
+
+        <label>Опишите проблему</label>
+        <textarea id="ticket_text" placeholder="Подробно опишите вашу ситуацию..."></textarea>
+        
+        <button onclick="sendTicket()">Отправить заявку</button>
+    </div>
+
     <script>
         let tg = window.Telegram.WebApp;
         tg.expand();
         
-        // Читаем данные, которые передал бот в ссылке
         const urlParams = new URLSearchParams(window.location.search);
         const myAcc = urlParams.get('acc');
         const myWallet = urlParams.get('wallet');
 
-        // Форматируем номер блоками по 4 цифры
-        if (myAcc) {
-            document.getElementById('my_account').innerText = myAcc.replace(/(\d{4})/g, '$1 ').trim();
-        }
+        if (myAcc) document.getElementById('my_account').innerText = myAcc.replace(/(\d{4})/g, '$1 ').trim();
         if (myWallet && myWallet !== "null" && myWallet !== "") {
             document.getElementById('my_wallet').value = myWallet;
             document.getElementById('btn_delete').style.display = "block";
@@ -101,13 +115,21 @@
             document.getElementById(tabId).classList.add('active');
         }
 
+        function checkCategory() {
+            let cat = document.getElementById("ticket_cat").value;
+            let dealBlock = document.getElementById("deal_id_block");
+            if (cat === "Покупатель молчит" || cat === "Продавец не выполнил") {
+                dealBlock.style.display = "block";
+            } else {
+                dealBlock.style.display = "none";
+            }
+        }
+
         function createDeal() {
             let seller = document.getElementById("seller_acc").value.replace(/\s/g, '').trim();
             let amount = document.getElementById("amount").value;
-
             if (seller.length !== 16) return tg.showAlert("ID продавца должен состоять ровно из 16 цифр!");
             if (!amount) return tg.showAlert("Введите сумму!");
-
             tg.sendData(JSON.stringify({ action: "create_deal", seller: seller, amount: amount }));
         }
 
@@ -121,6 +143,24 @@
             tg.showConfirm("Точно удалить кошелек для выплат?", function(passed) {
                 if(passed) tg.sendData(JSON.stringify({ action: "delete_wallet" }));
             });
+        }
+
+        function sendTicket() {
+            let cat = document.getElementById("ticket_cat").value;
+            let text = document.getElementById("ticket_text").value.trim();
+            let dealId = document.getElementById("ticket_deal_id").value.trim();
+
+            if (!text) return tg.showAlert("Опишите проблему!");
+            if ((cat === "Покупатель молчит" || cat === "Продавец не выполнил") && !dealId) {
+                return tg.showAlert("Укажите ID сделки!");
+            }
+
+            tg.sendData(JSON.stringify({ 
+                action: "create_ticket", 
+                category: cat, 
+                text: text, 
+                deal_id: dealId || 0 
+            }));
         }
     </script>
 </body>
