@@ -13,18 +13,22 @@
             margin: 0; padding: 20px;
         }
         .header { text-align: center; margin-bottom: 20px; }
+        .acc-box {
+            background: var(--tg-theme-secondary-bg-color, #f4f4f5);
+            padding: 15px; border-radius: 10px; text-align: center; margin-bottom: 20px;
+        }
+        .acc-num { font-size: 24px; font-weight: bold; letter-spacing: 2px; color: var(--tg-theme-button-color, #3390ec); margin-top: 5px; }
         
-        /* Вкладки */
         .tabs { display: flex; margin-bottom: 20px; background: var(--tg-theme-secondary-bg-color, #f4f4f5); border-radius: 10px; overflow: hidden; }
-        .tab { flex: 1; text-align: center; padding: 12px; cursor: pointer; font-weight: bold; }
+        .tab { flex: 1; text-align: center; padding: 12px; cursor: pointer; font-weight: bold; font-size: 14px; }
         .tab.active { background: var(--tg-theme-button-color, #3390ec); color: var(--tg-theme-button-text-color, #fff); }
         
         .section { display: none; }
         .section.active { display: block; }
         
-        label { display: block; margin-bottom: 5px; font-weight: bold; font-size: 14px; }
+        label { display: block; margin-bottom: 5px; font-weight: bold; font-size: 14px; margin-top: 15px;}
         input {
-            width: 100%; padding: 12px; margin-bottom: 15px; border-radius: 8px;
+            width: 100%; padding: 12px; margin-bottom: 5px; border-radius: 8px;
             border: 1px solid var(--tg-theme-hint-color, #ccc);
             background: var(--tg-theme-bg-color, #fff); color: var(--tg-theme-text-color, #000);
             box-sizing: border-box; font-size: 16px;
@@ -32,26 +36,28 @@
         button {
             width: 100%; padding: 14px; border-radius: 8px; border: none; font-size: 16px; font-weight: bold;
             background-color: var(--tg-theme-button-color, #3390ec);
-            color: var(--tg-theme-button-text-color, #ffffff); cursor: pointer;
+            color: var(--tg-theme-button-text-color, #ffffff); cursor: pointer; margin-top: 15px;
         }
+        .btn-danger { background-color: #ff3b30; margin-top: 10px; }
     </style>
 </head>
 <body>
 
-    <div class="header">
-        <h2 id="greeting">Привет!</h2>
+    <div class="acc-box">
+        <div style="font-size: 12px; color: gray; text-transform: uppercase;">Ваш анонимный ID</div>
+        <div class="acc-num" id="my_account">Загрузка...</div>
     </div>
 
     <!-- Переключатель вкладок -->
     <div class="tabs">
         <div class="tab active" onclick="switchTab('deal')">Новая сделка</div>
-        <div class="tab" onclick="switchTab('profile')">Мой профиль</div>
+        <div class="tab" onclick="switchTab('profile')">Кошелек</div>
     </div>
 
     <!-- Раздел: НОВАЯ СДЕЛКА -->
     <div id="deal" class="section active">
-        <label>Telegram @username продавца</label>
-        <input type="text" id="seller_username" placeholder="Например: durov">
+        <label>16-значный ID продавца</label>
+        <input type="number" id="seller_acc" placeholder="Например: 1234567890123456">
         
         <label>Сумма сделки (TON)</label>
         <input type="number" id="amount" placeholder="Например: 1.5" step="0.1">
@@ -59,49 +65,62 @@
         <button onclick="createDeal()">Сформировать сделку</button>
     </div>
 
-    <!-- Раздел: ПРОФИЛЬ (Для продавцов) -->
+    <!-- Раздел: ПРОФИЛЬ -->
     <div id="profile" class="section">
-        <p style="font-size: 14px; color: gray;">Укажите ваш кошелек. На него бот будет отправлять деньги, когда у вас что-то купят.</p>
+        <p style="font-size: 13px; color: gray;">Добавьте адрес TON, на который гарант будет автоматически выводить вашу прибыль от продаж.</p>
         
-        <label>Мой TON Кошелек для выплат</label>
-        <input type="text" id="my_wallet" placeholder="UQ...">
+        <label>Мой кошелек для выплат</label>
+        <input type="text" id="my_wallet" placeholder="Укажите UQ... адрес">
         
         <button onclick="saveWallet()">Сохранить кошелек</button>
+        <button class="btn-danger" onclick="deleteWallet()" id="btn_delete" style="display: none;">Удалить кошелек</button>
     </div>
 
     <script>
         let tg = window.Telegram.WebApp;
         tg.expand();
         
-        // Автоматически подставляем имя пользователя из Телеграма
-        if (tg.initDataUnsafe.user) {
-            document.getElementById('greeting').innerText = `Привет, ${tg.initDataUnsafe.user.first_name}!`;
+        // Читаем данные, которые передал бот в ссылке
+        const urlParams = new URLSearchParams(window.location.search);
+        const myAcc = urlParams.get('acc');
+        const myWallet = urlParams.get('wallet');
+
+        // Форматируем номер блоками по 4 цифры
+        if (myAcc) {
+            document.getElementById('my_account').innerText = myAcc.replace(/(\d{4})/g, '$1 ').trim();
+        }
+        if (myWallet && myWallet !== "null" && myWallet !== "") {
+            document.getElementById('my_wallet').value = myWallet;
+            document.getElementById('btn_delete').style.display = "block";
         }
 
         function switchTab(tabId) {
             document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
             document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-            
             event.target.classList.add('active');
             document.getElementById(tabId).classList.add('active');
         }
 
-        // Отправка данных для сделки
         function createDeal() {
-            let seller = document.getElementById("seller_username").value.replace('@', '').trim();
+            let seller = document.getElementById("seller_acc").value.replace(/\s/g, '').trim();
             let amount = document.getElementById("amount").value;
 
-            if (!seller || !amount) return tg.showAlert("Заполните все поля!");
+            if (seller.length !== 16) return tg.showAlert("ID продавца должен состоять ровно из 16 цифр!");
+            if (!amount) return tg.showAlert("Введите сумму!");
 
             tg.sendData(JSON.stringify({ action: "create_deal", seller: seller, amount: amount }));
         }
 
-        // Отправка данных для сохранения кошелька
         function saveWallet() {
             let wallet = document.getElementById("my_wallet").value.trim();
             if (wallet.length !== 48) return tg.showAlert("Кошелек TON должен состоять из 48 символов!");
-
             tg.sendData(JSON.stringify({ action: "save_wallet", wallet: wallet }));
+        }
+
+        function deleteWallet() {
+            tg.showConfirm("Точно удалить кошелек для выплат?", function(passed) {
+                if(passed) tg.sendData(JSON.stringify({ action: "delete_wallet" }));
+            });
         }
     </script>
 </body>
