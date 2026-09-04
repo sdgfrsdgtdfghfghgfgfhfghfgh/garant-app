@@ -21,122 +21,44 @@
             padding: 20px;
         }
         
-        /* Логотип Custod Bot */
-        .logo-container {
-            text-align: center;
-            margin-bottom: 25px;
-            margin-top: 10px;
-        }
-        .logo-text-black {
-            font-size: 36px;
-            font-weight: 900;
-            color: var(--custod-black);
-            letter-spacing: -1px;
-        }
-        .logo-text-orange {
-            font-size: 36px;
-            font-weight: 900;
-            background-color: var(--custod-orange);
-            color: var(--custod-white);
-            padding: 0 8px;
-            border-radius: 6px;
-            margin-left: 2px;
-            letter-spacing: -1px;
-        }
+        .logo-container { text-align: center; margin-bottom: 25px; margin-top: 10px; }
+        .logo-text-black { font-size: 32px; font-weight: 900; color: var(--custod-black); letter-spacing: -1px; }
+        .logo-text-orange { font-size: 32px; font-weight: 900; background-color: var(--custod-orange); color: var(--custod-white); padding: 0 8px; border-radius: 6px; margin-left: 2px; letter-spacing: -1px; }
 
-        .acc-box { 
-            background: var(--custod-white); 
-            padding: 15px; 
-            border-radius: 12px; 
-            text-align: center; 
-            margin-bottom: 20px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-        }
-        .acc-num { 
-            font-size: 24px; 
-            font-weight: 900; 
-            letter-spacing: 2px; 
-            color: var(--custod-orange); 
-            margin-top: 5px; 
-        }
+        .acc-box { background: var(--custod-white); padding: 15px; border-radius: 12px; text-align: center; margin-bottom: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+        .acc-num { font-size: 24px; font-weight: 900; letter-spacing: 2px; color: var(--custod-orange); margin-top: 5px; }
         
-        .tabs { 
-            display: flex; 
-            margin-bottom: 20px; 
-            background: var(--custod-gray); 
-            border-radius: 10px; 
-            overflow: hidden; 
-        }
-        .tab { 
-            flex: 1; 
-            text-align: center; 
-            padding: 12px; 
-            cursor: pointer; 
-            font-weight: bold; 
-            font-size: 14px; 
-            color: var(--custod-black);
-            transition: 0.2s;
-        }
-        .tab.active { 
-            background: var(--custod-orange); 
-            color: var(--custod-white); 
-        }
+        .tabs { display: flex; margin-bottom: 20px; background: var(--custod-gray); border-radius: 10px; overflow: hidden; }
+        .tab { flex: 1; text-align: center; padding: 12px 5px; cursor: pointer; font-weight: bold; font-size: 13px; color: var(--custod-black); transition: 0.2s; }
+        .tab.active { background: var(--custod-orange); color: var(--custod-white); }
         
         .section { display: none; }
         .section.active { display: block; }
         
-        label { 
-            display: block; 
-            margin-bottom: 5px; 
-            font-weight: bold; 
-            font-size: 14px; 
-            margin-top: 15px;
-        }
+        label { display: block; margin-bottom: 5px; font-weight: bold; font-size: 14px; margin-top: 15px;}
         input, select, textarea {
-            width: 100%; 
-            padding: 14px; 
-            margin-bottom: 5px; 
-            border-radius: 10px;
-            border: 2px solid transparent;
-            background: var(--custod-white); 
-            color: var(--custod-black);
-            box-sizing: border-box; 
-            font-size: 16px; 
-            font-family: inherit;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-            transition: border 0.2s;
+            width: 100%; padding: 14px; margin-bottom: 5px; border-radius: 10px;
+            border: 2px solid transparent; background: var(--custod-white); color: var(--custod-black);
+            box-sizing: border-box; font-size: 16px; font-family: inherit; box-shadow: 0 2px 8px rgba(0,0,0,0.05); transition: border 0.2s;
         }
-        input:focus, select:focus, textarea:focus {
-            outline: none;
-            border: 2px solid var(--custod-orange);
-        }
+        input:focus, select:focus, textarea:focus { outline: none; border: 2px solid var(--custod-orange); }
         textarea { resize: vertical; min-height: 90px; }
         
         button {
-            width: 100%; 
-            padding: 16px; 
-            border-radius: 10px; 
-            border: none; 
-            font-size: 16px; 
-            font-weight: 900;
-            background-color: var(--custod-orange);
-            color: var(--custod-white); 
-            cursor: pointer; 
-            margin-top: 15px;
-            box-shadow: 0 4px 12px rgba(249, 144, 0, 0.3);
-            text-transform: uppercase;
+            width: 100%; padding: 16px; border-radius: 10px; border: none; font-size: 16px; font-weight: 900;
+            background-color: var(--custod-orange); color: var(--custod-white); cursor: pointer; margin-top: 15px;
+            box-shadow: 0 4px 12px rgba(249, 144, 0, 0.3); text-transform: uppercase;
         }
         button:active { transform: scale(0.98); }
-        .btn-danger { 
-            background-color: #222; 
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-            margin-top: 10px; 
-        }
+        .btn-danger { background-color: #222; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2); margin-top: 10px; }
+        
+        .balance-box { background: var(--custod-gray); padding: 15px; border-radius: 10px; text-align: center; margin-bottom: 15px; }
+        .balance-title { font-size: 13px; color: #555; text-transform: uppercase; font-weight: bold; }
+        .balance-amount { font-size: 26px; font-weight: 900; color: var(--custod-black); margin-top: 5px; }
     </style>
 </head>
 <body>
 
-    <!-- Логотип -->
     <div class="logo-container">
         <span class="logo-text-black">Custod</span><span class="logo-text-orange">Bot</span>
     </div>
@@ -146,10 +68,11 @@
         <div class="acc-num" id="my_account">Загрузка...</div>
     </div>
 
-    <!-- Вкладки -->
+    <!-- Вкладки (Добавлена вкладка КАНАЛ) -->
     <div class="tabs">
         <div class="tab active" onclick="switchTab('deal')">Сделка</div>
         <div class="tab" onclick="switchTab('profile')">Кошелек</div>
+        <div class="tab" onclick="tg.openTelegramLink('https://t.me/CustodGuarantor')">Канал</div>
         <div class="tab" onclick="switchTab('support')">Поддержка</div>
     </div>
 
@@ -159,14 +82,18 @@
         <input type="number" id="seller_acc" placeholder="Например: 1234 5678 9012 3456">
         
         <label>Сумма сделки (TON)</label>
-        <input type="number" id="amount" placeholder="Минимум 0.5 TON" step="0.1">
+        <input type="number" id="amount" placeholder="Минимум 0.01 TON" step="0.01">
         
         <button onclick="createDeal()">Сформировать сделку</button>
     </div>
 
     <!-- Вкладка: ПРОФИЛЬ -->
     <div id="profile" class="section">
-        <p style="font-size: 13px; color: gray;">Укажите адрес TON, на который будут выводиться деньги за успешные продажи.</p>
+        <div class="balance-box">
+            <div class="balance-title">Успешно заработано</div>
+            <div class="balance-amount" id="earned_amount">0.00 TON</div>
+        </div>
+
         <label>Мой кошелек для выплат</label>
         <input type="text" id="my_wallet" placeholder="Укажите UQ... адрес">
         
@@ -204,8 +131,10 @@
         const urlParams = new URLSearchParams(window.location.search);
         const myAcc = urlParams.get('acc');
         const myWallet = urlParams.get('wallet');
+        const earned = urlParams.get('earned');
 
         if (myAcc) document.getElementById('my_account').innerText = myAcc.replace(/(\d{4})/g, '$1 ').trim();
+        if (earned) document.getElementById('earned_amount').innerText = parseFloat(earned).toFixed(2) + " TON";
         if (myWallet && myWallet !== "null" && myWallet !== "") {
             document.getElementById('my_wallet').value = myWallet;
             document.getElementById('btn_delete').style.display = "block";
@@ -221,18 +150,14 @@
         function checkCategory() {
             let cat = document.getElementById("ticket_cat").value;
             let dealBlock = document.getElementById("deal_id_block");
-            if (cat === "Покупатель молчит" || cat === "Продавец не выполнил") {
-                dealBlock.style.display = "block";
-            } else {
-                dealBlock.style.display = "none";
-            }
+            dealBlock.style.display = (cat === "Покупатель молчит" || cat === "Продавец не выполнил") ? "block" : "none";
         }
 
         function createDeal() {
             let seller = document.getElementById("seller_acc").value.replace(/\s/g, '').trim();
             let amount = document.getElementById("amount").value;
             if (seller.length !== 16) return tg.showAlert("ID продавца должен состоять ровно из 16 цифр!");
-            if (!amount || amount < 0.5) return tg.showAlert("Минимальная сумма сделки: 0.5 TON");
+            if (!amount || amount < 0.01) return tg.showAlert("Минимальная сумма сделки: 0.01 TON");
             tg.sendData(JSON.stringify({ action: "create_deal", seller: seller, amount: amount }));
         }
 
@@ -258,12 +183,7 @@
                 return tg.showAlert("Укажите ID сделки!");
             }
 
-            tg.sendData(JSON.stringify({ 
-                action: "create_ticket", 
-                category: cat, 
-                text: text, 
-                deal_id: dealId || 0 
-            }));
+            tg.sendData(JSON.stringify({ action: "create_ticket", category: cat, text: text, deal_id: dealId || 0 }));
         }
     </script>
 </body>
