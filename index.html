@@ -4,79 +4,104 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TON Гарант</title>
-    <!-- Подключаем библиотеку Telegram -->
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            font-family: -apple-system, sans-serif;
             background-color: var(--tg-theme-bg-color, #ffffff);
             color: var(--tg-theme-text-color, #000000);
-            padding: 20px;
-            margin: 0;
+            margin: 0; padding: 20px;
         }
-        h2 { text-align: center; }
-        .input-group { margin-bottom: 15px; }
-        label { display: block; margin-bottom: 5px; font-weight: bold; }
+        .header { text-align: center; margin-bottom: 20px; }
+        
+        /* Вкладки */
+        .tabs { display: flex; margin-bottom: 20px; background: var(--tg-theme-secondary-bg-color, #f4f4f5); border-radius: 10px; overflow: hidden; }
+        .tab { flex: 1; text-align: center; padding: 12px; cursor: pointer; font-weight: bold; }
+        .tab.active { background: var(--tg-theme-button-color, #3390ec); color: var(--tg-theme-button-text-color, #fff); }
+        
+        .section { display: none; }
+        .section.active { display: block; }
+        
+        label { display: block; margin-bottom: 5px; font-weight: bold; font-size: 14px; }
         input {
-            width: 100%;
-            padding: 10px;
+            width: 100%; padding: 12px; margin-bottom: 15px; border-radius: 8px;
             border: 1px solid var(--tg-theme-hint-color, #ccc);
-            border-radius: 8px;
-            background-color: var(--tg-theme-secondary-bg-color, #f4f4f5);
-            color: var(--tg-theme-text-color, #000);
-            box-sizing: border-box;
-            font-size: 16px;
+            background: var(--tg-theme-bg-color, #fff); color: var(--tg-theme-text-color, #000);
+            box-sizing: border-box; font-size: 16px;
         }
         button {
-            width: 100%;
-            padding: 14px;
+            width: 100%; padding: 14px; border-radius: 8px; border: none; font-size: 16px; font-weight: bold;
             background-color: var(--tg-theme-button-color, #3390ec);
-            color: var(--tg-theme-button-text-color, #ffffff);
-            border: none;
-            border-radius: 8px;
-            font-size: 16px;
-            font-weight: bold;
-            cursor: pointer;
-            margin-top: 10px;
+            color: var(--tg-theme-button-text-color, #ffffff); cursor: pointer;
         }
     </style>
 </head>
 <body>
 
-    <h2>Создать сделку</h2>
-    
-    <div class="input-group">
+    <div class="header">
+        <h2 id="greeting">Привет!</h2>
+    </div>
+
+    <!-- Переключатель вкладок -->
+    <div class="tabs">
+        <div class="tab active" onclick="switchTab('deal')">Новая сделка</div>
+        <div class="tab" onclick="switchTab('profile')">Мой профиль</div>
+    </div>
+
+    <!-- Раздел: НОВАЯ СДЕЛКА -->
+    <div id="deal" class="section active">
+        <label>Telegram @username продавца</label>
+        <input type="text" id="seller_username" placeholder="Например: durov">
+        
         <label>Сумма сделки (TON)</label>
         <input type="number" id="amount" placeholder="Например: 1.5" step="0.1">
+        
+        <button onclick="createDeal()">Сформировать сделку</button>
     </div>
 
-    <div class="input-group">
-        <label>TON Кошелек продавца</label>
-        <input type="text" id="address" placeholder="UQ...">
+    <!-- Раздел: ПРОФИЛЬ (Для продавцов) -->
+    <div id="profile" class="section">
+        <p style="font-size: 14px; color: gray;">Укажите ваш кошелек. На него бот будет отправлять деньги, когда у вас что-то купят.</p>
+        
+        <label>Мой TON Кошелек для выплат</label>
+        <input type="text" id="my_wallet" placeholder="UQ...">
+        
+        <button onclick="saveWallet()">Сохранить кошелек</button>
     </div>
-
-    <button onclick="sendData()">Сформировать сделку</button>
 
     <script>
-        // Инициализируем WebApp
         let tg = window.Telegram.WebApp;
-        tg.expand(); // Открыть на весь экран
+        tg.expand();
+        
+        // Автоматически подставляем имя пользователя из Телеграма
+        if (tg.initDataUnsafe.user) {
+            document.getElementById('greeting').innerText = `Привет, ${tg.initDataUnsafe.user.first_name}!`;
+        }
 
-        function sendData() {
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+            
+            event.target.classList.add('active');
+            document.getElementById(tabId).classList.add('active');
+        }
+
+        // Отправка данных для сделки
+        function createDeal() {
+            let seller = document.getElementById("seller_username").value.replace('@', '').trim();
             let amount = document.getElementById("amount").value;
-            let address = document.getElementById("address").value;
 
-            if (!amount || !address) {
-                tg.showAlert("Пожалуйста, заполните все поля!");
-                return;
-            }
+            if (!seller || !amount) return tg.showAlert("Заполните все поля!");
 
-            // Формируем JSON и отправляем в Python бота
-            let data = {
-                amount: amount,
-                address: address
-            };
-            tg.sendData(JSON.stringify(data));
+            tg.sendData(JSON.stringify({ action: "create_deal", seller: seller, amount: amount }));
+        }
+
+        // Отправка данных для сохранения кошелька
+        function saveWallet() {
+            let wallet = document.getElementById("my_wallet").value.trim();
+            if (wallet.length !== 48) return tg.showAlert("Кошелек TON должен состоять из 48 символов!");
+
+            tg.sendData(JSON.stringify({ action: "save_wallet", wallet: wallet }));
         }
     </script>
 </body>
