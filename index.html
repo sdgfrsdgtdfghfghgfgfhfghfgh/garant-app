@@ -3,45 +3,146 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TON Гарант</title>
+    <title>Custod Bot</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        body {
-            font-family: -apple-system, sans-serif;
-            background-color: var(--tg-theme-bg-color, #ffffff);
-            color: var(--tg-theme-text-color, #000000);
-            margin: 0; padding: 20px;
+        :root {
+            --custod-orange: #f99000;
+            --custod-black: #000000;
+            --custod-white: #ffffff;
+            --custod-bg: #f5f5f5;
+            --custod-gray: #e0e0e0;
         }
-        .acc-box { background: var(--tg-theme-secondary-bg-color, #f4f4f5); padding: 15px; border-radius: 10px; text-align: center; margin-bottom: 20px; }
-        .acc-num { font-size: 24px; font-weight: bold; letter-spacing: 2px; color: var(--tg-theme-button-color, #3390ec); margin-top: 5px; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--custod-bg);
+            color: var(--custod-black);
+            margin: 0; 
+            padding: 20px;
+        }
         
-        .tabs { display: flex; margin-bottom: 20px; background: var(--tg-theme-secondary-bg-color, #f4f4f5); border-radius: 10px; overflow: hidden; }
-        .tab { flex: 1; text-align: center; padding: 10px; cursor: pointer; font-weight: bold; font-size: 13px; }
-        .tab.active { background: var(--tg-theme-button-color, #3390ec); color: var(--tg-theme-button-text-color, #fff); }
+        /* Логотип Custod Bot */
+        .logo-container {
+            text-align: center;
+            margin-bottom: 25px;
+            margin-top: 10px;
+        }
+        .logo-text-black {
+            font-size: 36px;
+            font-weight: 900;
+            color: var(--custod-black);
+            letter-spacing: -1px;
+        }
+        .logo-text-orange {
+            font-size: 36px;
+            font-weight: 900;
+            background-color: var(--custod-orange);
+            color: var(--custod-white);
+            padding: 0 8px;
+            border-radius: 6px;
+            margin-left: 2px;
+            letter-spacing: -1px;
+        }
+
+        .acc-box { 
+            background: var(--custod-white); 
+            padding: 15px; 
+            border-radius: 12px; 
+            text-align: center; 
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        .acc-num { 
+            font-size: 24px; 
+            font-weight: 900; 
+            letter-spacing: 2px; 
+            color: var(--custod-orange); 
+            margin-top: 5px; 
+        }
+        
+        .tabs { 
+            display: flex; 
+            margin-bottom: 20px; 
+            background: var(--custod-gray); 
+            border-radius: 10px; 
+            overflow: hidden; 
+        }
+        .tab { 
+            flex: 1; 
+            text-align: center; 
+            padding: 12px; 
+            cursor: pointer; 
+            font-weight: bold; 
+            font-size: 14px; 
+            color: var(--custod-black);
+            transition: 0.2s;
+        }
+        .tab.active { 
+            background: var(--custod-orange); 
+            color: var(--custod-white); 
+        }
         
         .section { display: none; }
         .section.active { display: block; }
         
-        label { display: block; margin-bottom: 5px; font-weight: bold; font-size: 14px; margin-top: 15px;}
+        label { 
+            display: block; 
+            margin-bottom: 5px; 
+            font-weight: bold; 
+            font-size: 14px; 
+            margin-top: 15px;
+        }
         input, select, textarea {
-            width: 100%; padding: 12px; margin-bottom: 5px; border-radius: 8px;
-            border: 1px solid var(--tg-theme-hint-color, #ccc);
-            background: var(--tg-theme-bg-color, #fff); color: var(--tg-theme-text-color, #000);
-            box-sizing: border-box; font-size: 16px; font-family: inherit;
+            width: 100%; 
+            padding: 14px; 
+            margin-bottom: 5px; 
+            border-radius: 10px;
+            border: 2px solid transparent;
+            background: var(--custod-white); 
+            color: var(--custod-black);
+            box-sizing: border-box; 
+            font-size: 16px; 
+            font-family: inherit;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            transition: border 0.2s;
         }
-        textarea { resize: vertical; min-height: 80px; }
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border: 2px solid var(--custod-orange);
+        }
+        textarea { resize: vertical; min-height: 90px; }
+        
         button {
-            width: 100%; padding: 14px; border-radius: 8px; border: none; font-size: 16px; font-weight: bold;
-            background-color: var(--tg-theme-button-color, #3390ec);
-            color: var(--tg-theme-button-text-color, #ffffff); cursor: pointer; margin-top: 15px;
+            width: 100%; 
+            padding: 16px; 
+            border-radius: 10px; 
+            border: none; 
+            font-size: 16px; 
+            font-weight: 900;
+            background-color: var(--custod-orange);
+            color: var(--custod-white); 
+            cursor: pointer; 
+            margin-top: 15px;
+            box-shadow: 0 4px 12px rgba(249, 144, 0, 0.3);
+            text-transform: uppercase;
         }
-        .btn-danger { background-color: #ff3b30; margin-top: 10px; }
+        button:active { transform: scale(0.98); }
+        .btn-danger { 
+            background-color: #222; 
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            margin-top: 10px; 
+        }
     </style>
 </head>
 <body>
 
+    <!-- Логотип -->
+    <div class="logo-container">
+        <span class="logo-text-black">Custod</span><span class="logo-text-orange">Bot</span>
+    </div>
+
     <div class="acc-box">
-        <div style="font-size: 12px; color: gray; text-transform: uppercase;">Ваш анонимный ID</div>
+        <div style="font-size: 12px; color: gray; text-transform: uppercase; font-weight: bold;">Ваш анонимный ID</div>
         <div class="acc-num" id="my_account">Загрузка...</div>
     </div>
 
@@ -55,21 +156,21 @@
     <!-- Вкладка: СДЕЛКА -->
     <div id="deal" class="section active">
         <label>16-значный ID продавца</label>
-        <input type="number" id="seller_acc" placeholder="Например: 1234567890123456">
+        <input type="number" id="seller_acc" placeholder="Например: 1234 5678 9012 3456">
         
         <label>Сумма сделки (TON)</label>
-        <input type="number" id="amount" placeholder="Например: 1.5" step="0.1">
+        <input type="number" id="amount" placeholder="Минимум 0.5 TON" step="0.1">
         
         <button onclick="createDeal()">Сформировать сделку</button>
     </div>
 
     <!-- Вкладка: ПРОФИЛЬ -->
     <div id="profile" class="section">
-        <p style="font-size: 13px; color: gray;">Добавьте адрес TON, на который гарант будет автоматически выводить вашу прибыль от продаж.</p>
+        <p style="font-size: 13px; color: gray;">Укажите адрес TON, на который будут выводиться деньги за успешные продажи.</p>
         <label>Мой кошелек для выплат</label>
         <input type="text" id="my_wallet" placeholder="Укажите UQ... адрес">
         
-        <button onclick="saveWallet()">Сохранить кошелек</button>
+        <button onclick="saveWallet()">Сохранить</button>
         <button class="btn-danger" onclick="deleteWallet()" id="btn_delete" style="display: none;">Удалить кошелек</button>
     </div>
 
@@ -85,7 +186,7 @@
 
         <div id="deal_id_block" style="display: none;">
             <label>ID Сделки</label>
-            <input type="number" id="ticket_deal_id" placeholder="Номер сделки">
+            <input type="number" id="ticket_deal_id" placeholder="Только цифры">
         </div>
 
         <label>Опишите проблему</label>
@@ -97,6 +198,8 @@
     <script>
         let tg = window.Telegram.WebApp;
         tg.expand();
+        tg.setHeaderColor('#f5f5f5');
+        tg.setBackgroundColor('#f5f5f5');
         
         const urlParams = new URLSearchParams(window.location.search);
         const myAcc = urlParams.get('acc');
@@ -129,7 +232,7 @@
             let seller = document.getElementById("seller_acc").value.replace(/\s/g, '').trim();
             let amount = document.getElementById("amount").value;
             if (seller.length !== 16) return tg.showAlert("ID продавца должен состоять ровно из 16 цифр!");
-            if (!amount) return tg.showAlert("Введите сумму!");
+            if (!amount || amount < 0.5) return tg.showAlert("Минимальная сумма сделки: 0.5 TON");
             tg.sendData(JSON.stringify({ action: "create_deal", seller: seller, amount: amount }));
         }
 
