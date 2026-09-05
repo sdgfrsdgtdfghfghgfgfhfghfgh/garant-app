@@ -3,59 +3,233 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Custod Bot</title>
+    <title>Custod</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         :root {
-            --custod-orange: #f99000;
-            --custod-black: #000000;
-            --custod-white: #ffffff;
-            --custod-bg: #f5f5f5;
-            --custod-gray: #e0e0e0;
+            --bg-color: #121212;
+            --surface-color: #1a1a1c;
+            --surface-hover: #242426;
+            --border-color: #2c2c30;
+            --text-primary: #ffffff;
+            --text-secondary: #8a8a93;
+            --accent-white: #f5f5f7;
+            --danger-color: #e53935;
         }
-        body { font-family: -apple-system, sans-serif; background-color: var(--custod-bg); color: var(--custod-black); margin: 0; padding: 20px; }
-        
-        .logo-container { text-align: center; margin-bottom: 25px; margin-top: 10px; }
-        .logo-text-black { font-size: 32px; font-weight: 900; color: var(--custod-black); letter-spacing: -1px; }
-        .logo-text-orange { font-size: 32px; font-weight: 900; background-color: var(--custod-orange); color: var(--custod-white); padding: 0 8px; border-radius: 6px; margin-left: 2px; letter-spacing: -1px; }
 
-        .acc-box { background: var(--custod-white); padding: 15px; border-radius: 12px; text-align: center; margin-bottom: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
-        .acc-num { font-size: 24px; font-weight: 900; letter-spacing: 2px; color: var(--custod-orange); margin-top: 5px; }
-        
-        .tabs { display: flex; margin-bottom: 20px; background: var(--custod-gray); border-radius: 10px; overflow: hidden; }
-        .tab { flex: 1; text-align: center; padding: 12px 5px; cursor: pointer; font-weight: bold; font-size: 13px; color: var(--custod-black); transition: 0.2s; }
-        .tab.active { background: var(--custod-orange); color: var(--custod-white); }
-        
-        .section { display: none; }
-        .section.active { display: block; }
-        
-        label { display: block; margin-bottom: 5px; font-weight: bold; font-size: 14px; margin-top: 15px;}
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            margin: 0;
+            padding: 24px 20px 32px;
+        }
+
+        .header {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .mask-logo {
+            width: 72px;
+            height: 72px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 8px;
+            filter: drop-shadow(0 8px 24px rgba(255, 255, 255, 0.12));
+        }
+
+        .mask-logo svg {
+            width: 100%;
+            height: 100%;
+        }
+
+        .acc-box {
+            background: var(--surface-color);
+            border: 1px solid var(--border-color);
+            padding: 16px 20px;
+            border-radius: 14px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .acc-label {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: var(--text-secondary);
+            font-weight: 600;
+        }
+
+        .acc-num {
+            font-size: 21px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            color: var(--text-primary);
+            margin-top: 6px;
+            font-family: "SF Mono", Monaco, Consolas, monospace;
+        }
+
+        .tabs {
+            display: flex;
+            background: var(--surface-color);
+            border: 1px solid var(--border-color);
+            padding: 4px;
+            border-radius: 12px;
+            margin-bottom: 24px;
+        }
+
+        .tab {
+            flex: 1;
+            text-align: center;
+            padding: 10px 4px;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .tab.active {
+            background: var(--surface-hover);
+            color: var(--text-primary);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+        }
+
+        .section {
+            display: none;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        .section-desc {
+            font-size: 13px;
+            line-height: 1.5;
+            color: var(--text-secondary);
+            margin: 0 0 16px;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-secondary);
+        }
+
         input, select, textarea {
-            width: 100%; padding: 14px; margin-bottom: 5px; border-radius: 10px;
-            border: 2px solid transparent; background: var(--custod-white); color: var(--custod-black);
-            box-sizing: border-box; font-size: 16px; font-family: inherit; box-shadow: 0 2px 8px rgba(0,0,0,0.05); transition: border 0.2s;
+            width: 100%;
+            padding: 14px 16px;
+            background: var(--surface-color);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            color: var(--text-primary);
+            font-size: 15px;
+            font-family: inherit;
+            outline: none;
+            transition: border-color 0.2s, background-color 0.2s;
         }
-        input:focus, select:focus, textarea:focus { outline: none; border: 2px solid var(--custod-orange); }
-        textarea { resize: vertical; min-height: 90px; }
-        
-        button {
-            width: 100%; padding: 16px; border-radius: 10px; border: none; font-size: 16px; font-weight: 900;
-            background-color: var(--custod-orange); color: var(--custod-white); cursor: pointer; margin-top: 15px;
-            box-shadow: 0 4px 12px rgba(249, 144, 0, 0.3); text-transform: uppercase;
+
+        input::placeholder, textarea::placeholder {
+            color: #55555c;
         }
-        button:active { transform: scale(0.98); }
-        .btn-danger { background-color: #222; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2); margin-top: 10px; }
+
+        input:focus, select:focus, textarea:focus {
+            border-color: #555560;
+            background: #1f1f22;
+        }
+
+        select {
+            appearance: none;
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%238a8a93' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 14px center;
+            background-size: 16px;
+            cursor: pointer;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 96px;
+        }
+
+        .btn-primary {
+            width: 100%;
+            padding: 15px;
+            background: var(--accent-white);
+            color: #0c0c0d;
+            border: none;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: opacity 0.15s, transform 0.15s;
+            margin-top: 8px;
+        }
+
+        .btn-primary:active {
+            transform: scale(0.985);
+            opacity: 0.9;
+        }
+
+        .btn-danger {
+            width: 100%;
+            padding: 14px;
+            background: transparent;
+            color: var(--danger-color);
+            border: 1px solid rgba(229, 57, 53, 0.35);
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: all 0.2s ease;
+        }
+
+        .btn-danger:active {
+            background: rgba(229, 57, 53, 0.1);
+            transform: scale(0.985);
+        }
     </style>
 </head>
 <body>
 
-    <div class="logo-container">
-        <span class="logo-text-black">Custod</span><span class="logo-text-orange">Bot</span>
+    <div class="header">
+        <div class="mask-logo">
+            <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M50 8C31 8 20 22 20 42C20 62 34 84 50 94C66 84 80 62 80 42C80 22 69 8 50 8Z" fill="#F0F0F2"/>
+                <path d="M26 36C32 31 42 32 45 35C41 35 34 37 28 40C26 38 26 36 26 36Z" fill="#121212"/>
+                <path d="M74 36C68 31 58 32 55 35C59 35 66 37 72 40C74 38 74 36 74 36Z" fill="#121212"/>
+                <path d="M29 42C33 39 41 40 44 43C41 45 33 46 29 42Z" fill="#121212"/>
+                <path d="M71 42C67 39 59 40 56 43C59 45 67 46 71 42Z" fill="#121212"/>
+                <path d="M48 37L46 59L50 62L54 59L52 37H48Z" fill="#E2E2E6"/>
+                <path d="M26 62C38 56 46 64 50 67C54 64 62 56 74 62C67 70 57 66 50 71C43 66 33 70 26 62Z" fill="#121212"/>
+                <path d="M33 68C42 74 58 74 67 68C61 77 39 77 33 68Z" fill="#121212"/>
+                <path d="M47 78H53L51 90H49L47 78Z" fill="#121212"/>
+                <path d="M27 50C25 50 24 53 26 55C29 55 30 52 27 50Z" fill="#D6D6DC"/>
+                <path d="M73 50C75 50 76 53 74 55C71 55 70 52 73 50Z" fill="#D6D6DC"/>
+            </svg>
+        </div>
     </div>
 
     <div class="acc-box">
-        <div style="font-size: 12px; color: gray; text-transform: uppercase; font-weight: bold;">Ваш анонимный ID</div>
-        <div class="acc-num" id="my_account">Загрузка...</div>
+        <div class="acc-label">Анонимный ID</div>
+        <div class="acc-num" id="my_account">•••• •••• •••• ••••</div>
     </div>
 
     <div class="tabs">
@@ -65,59 +239,66 @@
         <div class="tab" onclick="switchTab('support')">Поддержка</div>
     </div>
 
-    <!-- Вкладка: СДЕЛКА -->
     <div id="deal" class="section active">
-        <label>16-значный ID продавца</label>
-        <input type="number" id="seller_acc" placeholder="Например: 1234 5678 9012 3456">
-        
-        <label>Сумма сделки (TON)</label>
-        <input type="number" id="amount" placeholder="Минимум 0.01 TON" step="0.01">
-        
-        <button onclick="createDeal()">Сформировать сделку</button>
+        <div class="form-group">
+            <label>ID продавца (16 цифр)</label>
+            <input type="text" id="seller_acc" placeholder="0000 0000 0000 0000" maxlength="19">
+        </div>
+        <div class="form-group">
+            <label>Сумма сделки (TON)</label>
+            <input type="number" id="amount" placeholder="0.01" step="0.01" min="0.01">
+        </div>
+        <button class="btn-primary" onclick="createDeal()">Сформировать сделку</button>
     </div>
 
-    <!-- Вкладка: ПРОФИЛЬ -->
     <div id="profile" class="section">
-        <p style="font-size: 13px; color: gray;">Укажите адрес TON-кошелька для получения средств по сделкам. Данные конфиденциальны.</p>
-        <label>Мой кошелек для выплат</label>
-        <input type="text" id="my_wallet" placeholder="Укажите UQ... адрес">
-        
-        <button onclick="saveWallet()">Сохранить</button>
+        <p class="section-desc">Укажите адрес TON-кошелька для автоматического вывода средств при закрытии сделок.</p>
+        <div class="form-group">
+            <label>TON Кошелек</label>
+            <input type="text" id="my_wallet" placeholder="UQ...">
+        </div>
+        <button class="btn-primary" onclick="saveWallet()">Сохранить</button>
         <button class="btn-danger" onclick="deleteWallet()" id="btn_delete" style="display: none;">Удалить кошелек</button>
     </div>
 
-    <!-- Вкладка: ПОДДЕРЖКА -->
     <div id="support" class="section">
-        <label>Категория обращения</label>
-        <select id="ticket_cat" onchange="checkCategory()">
-            <option value="Тех. жалоба">Тех. жалоба</option>
-            <option value="Покупатель молчит">Покупатель забыл подтвердить</option>
-            <option value="Продавец не выполнил">Продавец не выполнил заказ</option>
-            <option value="Пожелания">Пожелания проекту</option>
-        </select>
-
-        <div id="deal_id_block" style="display: none;">
-            <label>ID Сделки</label>
-            <input type="number" id="ticket_deal_id" placeholder="Только цифры">
+        <div class="form-group">
+            <label>Категория</label>
+            <select id="ticket_cat" onchange="checkCategory()">
+                <option value="Тех. жалоба">Тех. жалоба</option>
+                <option value="Покупатель молчит">Покупатель молчит</option>
+                <option value="Продавец не выполнил">Продавец не выполнил заказ</option>
+                <option value="Пожелания">Пожелания проекту</option>
+            </select>
         </div>
 
-        <label>Опишите проблему</label>
-        <textarea id="ticket_text" placeholder="Подробно опишите вашу ситуацию..."></textarea>
-        
-        <button onclick="sendTicket()">Отправить заявку</button>
+        <div class="form-group" id="deal_id_block" style="display: none;">
+            <label>ID Сделки</label>
+            <input type="number" id="ticket_deal_id" placeholder="Номер сделки">
+        </div>
+
+        <div class="form-group">
+            <label>Сообщение</label>
+            <textarea id="ticket_text" placeholder="Опишите ситуацию..."></textarea>
+        </div>
+
+        <button class="btn-primary" onclick="sendTicket()">Отправить обращение</button>
     </div>
 
     <script>
-        let tg = window.Telegram.WebApp;
+        const tg = window.Telegram.WebApp;
         tg.expand();
-        tg.setHeaderColor('#f5f5f5');
-        tg.setBackgroundColor('#f5f5f5');
-        
+        tg.setHeaderColor('#121212');
+        tg.setBackgroundColor('#121212');
+
         const urlParams = new URLSearchParams(window.location.search);
         const myAcc = urlParams.get('acc');
         const myWallet = urlParams.get('wallet');
 
-        if (myAcc) document.getElementById('my_account').innerText = myAcc.replace(/(\d{4})/g, '$1 ').trim();
+        if (myAcc) {
+            document.getElementById('my_account').innerText = myAcc.replace(/(\d{4})/g, '$1 ').trim();
+        }
+
         if (myWallet && myWallet !== "null" && myWallet !== "") {
             document.getElementById('my_wallet').value = myWallet;
             document.getElementById('btn_delete').style.display = "block";
@@ -131,42 +312,49 @@
         }
 
         function checkCategory() {
-            let cat = document.getElementById("ticket_cat").value;
-            let dealBlock = document.getElementById("deal_id_block");
+            const cat = document.getElementById("ticket_cat").value;
+            const dealBlock = document.getElementById("deal_id_block");
             dealBlock.style.display = (cat === "Покупатель молчит" || cat === "Продавец не выполнил") ? "block" : "none";
         }
 
         function createDeal() {
-            let seller = document.getElementById("seller_acc").value.replace(/\s/g, '').trim();
-            let amount = document.getElementById("amount").value;
-            if (seller.length !== 16) return tg.showAlert("ID продавца должен состоять ровно из 16 цифр!");
-            if (!amount || amount < 0.01) return tg.showAlert("Минимальная сумма сделки: 0.01 TON");
+            const seller = document.getElementById("seller_acc").value.replace(/\s/g, '').trim();
+            const amount = document.getElementById("amount").value;
+
+            if (seller.length !== 16) return tg.showAlert("ID продавца должен состоять из 16 цифр");
+            if (!amount || amount < 0.01) return tg.showAlert("Минимальная сумма: 0.01 TON");
+
             tg.sendData(JSON.stringify({ action: "create_deal", seller: seller, amount: amount }));
         }
 
         function saveWallet() {
-            let wallet = document.getElementById("my_wallet").value.trim();
-            if (wallet.length !== 48) return tg.showAlert("Кошелек TON должен состоять из 48 символов!");
+            const wallet = document.getElementById("my_wallet").value.trim();
+            if (wallet.length !== 48) return tg.showAlert("Некорректный TON-адрес (требуется 48 символов)");
             tg.sendData(JSON.stringify({ action: "save_wallet", wallet: wallet }));
         }
 
         function deleteWallet() {
-            tg.showConfirm("Точно удалить кошелек для выплат?", function(passed) {
-                if(passed) tg.sendData(JSON.stringify({ action: "delete_wallet" }));
+            tg.showConfirm("Удалить адрес для выплат?", function(confirmed) {
+                if (confirmed) tg.sendData(JSON.stringify({ action: "delete_wallet" }));
             });
         }
 
         function sendTicket() {
-            let cat = document.getElementById("ticket_cat").value;
-            let text = document.getElementById("ticket_text").value.trim();
-            let dealId = document.getElementById("ticket_deal_id").value.trim();
+            const cat = document.getElementById("ticket_cat").value;
+            const text = document.getElementById("ticket_text").value.trim();
+            const dealId = document.getElementById("ticket_deal_id").value.trim();
 
-            if (!text) return tg.showAlert("Опишите проблему!");
+            if (!text) return tg.showAlert("Заполните текст обращения");
             if ((cat === "Покупатель молчит" || cat === "Продавец не выполнил") && !dealId) {
-                return tg.showAlert("Укажите ID сделки!");
+                return tg.showAlert("Укажите номер сделки");
             }
 
-            tg.sendData(JSON.stringify({ action: "create_ticket", category: cat, text: text, deal_id: dealId || 0 }));
+            tg.sendData(JSON.stringify({
+                action: "create_ticket",
+                category: cat,
+                text: text,
+                deal_id: dealId || 0
+            }));
         }
     </script>
 </body>
